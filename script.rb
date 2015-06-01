@@ -2,6 +2,9 @@
 
 require 'trello'
 require 'yaml'
+require 'dotenv'
+
+Dotenv.load
 
 board_id = ENV['TRELLO_BOARD_ID']
 

@@ -12,9 +12,7 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.3.7)
     builder (3.2.2)
-    colored (1.2)
-    command_line_reporter (3.3.5)
-      colored (>= 1.2)
+    dotenv (2.0.1)
     i18n (0.7.0)
     json (1.8.2)
     mime-types (2.4.3)
@@ -38,5 +36,5 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  command_line_reporter
+  dotenv
   ruby-trello
