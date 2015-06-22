@@ -69,7 +69,6 @@ class BurndownResults
           estimate = match.present? && match[1].present? && match[1].to_f || 0
           {
             card: card,
-            card_name: card.name,
             estimate: estimate,
             member_id: card.member_ids.first,
             list_id: card.list_id,
@@ -77,6 +76,9 @@ class BurndownResults
         }
         .reject{ |obj|
           obj[:estimate] == 0
+        }
+        .reject{ |obj|
+          obj[:card].closed == true
         }
   end
 
