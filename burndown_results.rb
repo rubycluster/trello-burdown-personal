@@ -14,8 +14,14 @@ class BurndownResults
   def print_personal_results
     personal_results.each do |result|
       puts "#{result[:member_name]}:"
-      puts "  Cards : #{result[:cards_percentage]}% (#{result[:cards_done]} / #{result[:cards_total]}), #{result[:cards_undone]} left"
-      puts "  Points: #{result[:points_percentage]}% (#{result[:points_done]} / #{result[:points_total]}), #{result[:points_undone]} left"
+      %w{cards points}.each do |target|
+        strings = %w{percentage done total undone}
+          .map do |type|
+            result[:"#{target}_#{type}"]
+          end
+          .unshift(target.capitalize)
+        puts "  %s : %d%% (%d / %d), %d left" % strings
+      end
     end
   end
 
@@ -36,23 +42,22 @@ class BurndownResults
             points_done: 0,
             points_undone: 0,
           }) {|memo, card|
-            if card[:list_id] == done_list.id
-              memo[:cards_done] += 1
-              memo[:points_done] += card[:estimate]
-            else
-              memo[:cards_undone] += 1
-              memo[:points_undone] += card[:estimate]
+            done = card[:list_id] == done_list.id ? :done : :undone
+            [done, :total].each do |type|
+              memo[:"cards_#{type}"] += 1
+              memo[:"points_#{type}"] += card[:estimate]
             end
-            memo[:cards_total] += 1
-            memo[:points_total] += card[:estimate]
             memo
           }
           .tap{|result|
-            result[:cards_percentage] = (1.0 * result[:cards_done] / (result[:cards_total] + 0.0001) * 100).round
-            result[:points_percentage] = (1.0 * result[:points_done] / (result[:points_total] + 0.0001) * 100).round
+            %w{cards points}.each do |target|
+              result[:"#{target}_percentage"] =
+                (1.0 * result[:"#{target}_done"] / (result[:"#{target}_total"] + 0.0001) * 100).round
+            end
           }
       }
       .reject{|result| result[:cards_total] == 0 }
+      .reject{|result| result[:points_total] == 0 }
       .sort_by{|result| 1 * result[:points_undone]}
   end
 
